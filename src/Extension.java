@@ -27,10 +27,14 @@ public class Extension {
             String codigoFuente = Files.readString(path); // abre el archivo, copiatodo el texto que tiene dentro y lo guarda en una variable
             System.out.println("archivo encontrado");
 
+            AnalizadorLexico analizador = new AnalizadorLexico(codigoFuente);
+            analizador.analizar();
+
         }catch(IOException e){
             System.out.println("Error al leer archivo");
         }finally{
             sc.close();
         }
     }
+
 }
