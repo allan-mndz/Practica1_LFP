@@ -1,0 +1,9 @@
+@modelo "claude-sonnet-4-6"
+// Este agente se encarga de traducir textos al ingles
+AGENTE traductor {
+contexto = "Eres un traductor profesional"
+variable texto = "Hola mundo, bienvenidos al laboratorio"
+TRADUCIR texto EN "ingles" -> resultado
+}
+EJECUTAR traductor
+EXPORTAR resultado

@@ -1,0 +1,9 @@
+@modelo "claude-sonnet-4-6"
+AGENTE traductor {
+contexto = "Eres un traductor profesional"
+# Esto generara un error porque el numeral no existe
+variable texto = "Hola mundo, bienvenidos al laboratorio" $
+TRADUCIR texto EN "ingles" -> resultado
+}
+EJECUTAR traductor ?
+EXPORTAR resultado

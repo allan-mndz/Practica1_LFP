@@ -65,7 +65,7 @@ public class AnalizadorLexico {
 
     private void extraerPalabra() {
         int columnaInicio = columna; // sirve para recordar en que columna inicia las palabras o el -
-        String lexema = "";          // variable de texto vacia para ir guardando letra por letra
+        String lexema = "";          // variable de texto vacio para ir guardando letra por letra
         int longitud = codigo.length();
 
         while(posicion < longitud){
@@ -83,8 +83,6 @@ public class AnalizadorLexico {
 
         String tipoToken = "Identificador";
 
-
-        //comparamos si la palabra del lexema es igual a "......"
         if (lexema.equals("AGENTE") || lexema.equals("contexto") || lexema.equals("variable") || lexema.equals("EJECUTAR") || lexema.equals("EXPORTAR")) {
 
             tipoToken = "Palabra reservada";
@@ -109,8 +107,7 @@ public class AnalizadorLexico {
         String lexema = "";
         int longitud = codigo.length();
 
-        // para el arroba inicial
-        lexema = lexema + codigo.charAt(posicion);
+        lexema = lexema + codigo.charAt(posicion); //va armando la palabra letra por letra
         posicion++;
         columna++;
 
@@ -130,79 +127,156 @@ public class AnalizadorLexico {
     }
 
     private void extraerCadena(){
+        int columnaInicio =  columna;
+        String lexema = "";
+        int longitud = codigo.length();
 
+        //para la comilla inicial
+        lexema = lexema + codigo.charAt(posicion);
+        posicion++;
+        columna++;
+
+        //leemos todo hasta enoontrar el cierre comilla
+        while (posicion < longitud && codigo.charAt(posicion) != '"'){
+
+            //extraemos la letra actual para usarla en diferentes cuestiones
+            char actual = codigo.charAt(posicion);
+            lexema = lexema + actual;
+
+            //por si el usuario dio enter dentro del texto
+            if (actual == '\n') {
+                fila++;
+                columna = 1;
+            } else {
+                columna++;
+            }
+            posicion++;
+        }
+
+        if (posicion < longitud && codigo.charAt(posicion) == '"') { //se detiene porque encontro la comilla final
+            lexema = lexema + '"';
+            posicion++;
+            columna++;
+
+            listaTokens.add(new Token(idToken, lexema, "Literal de Cadena", fila, columnaInicio));
+            idToken++;
+        }else {
+            listaErrores.add(new ErrorLexico(lexema, "Cadena sin cerrar", fila, columnaInicio));
+        }
     }
 
     private void extraerNumero(){
+        int columnaInicio = columna;
+        String lexema = "";
+        boolean tienePunto = false;
+        int longitud = codigo.length();
 
+        while(posicion < longitud){
+            char actual = codigo.charAt(posicion);
+
+            if(Character.isDigit(actual)){ //si la letra actual es un digito del 0-9 la agregamos y seguimos avanzando
+                lexema = lexema + actual;
+                posicion++;
+                columna++;
+            } else if (actual == '.' && !tienePunto) {// si tiene punto el tienePunto se activa
+                lexema = lexema +  actual;
+                tienePunto = true;
+                posicion++;
+                columna++;
+            }else{
+                break;
+            }
+        }
+
+        if(tienePunto){
+            listaTokens.add(new Token(idToken, lexema, "Literal Decimal", fila, columnaInicio));
+        }else {
+            listaTokens.add(new Token(idToken, lexema, "Literal Entero", fila, columnaInicio));
+        }
+        idToken++;
     }
 
-    private void extraerSimboloUnico(char c){
+    private void extraerSimboloUnico(char c){ //recibe el simobolo exacto
+        String lexema = String.valueOf(c); //toma el simbolo suelto y lo introduce al texto
+        String tipo;
+        if (c == '=' || c == '+'){
+            tipo = "Operador";
+        }else{
+            tipo = "Delimitador";
+        }
 
+        listaTokens.add(new Token(idToken, lexema, tipo, fila, columna));
+        idToken++;
+        posicion++;
+        columna++;
     }
 
     private void extraerFlechaOGuion(){
+        int longitud = codigo.length();
+        //posicion + 1 sirve para ver que hay en el siguiente espacio
+        if (posicion + 1 < longitud && codigo.charAt(posicion + 1) == '>') {
 
+            listaTokens.add(new Token(idToken, "->", "Conector", fila, columna));
+            idToken++;
+            //como leimos dos simbolos sumamos dos pasos hacia delante
+            posicion +=2;
+            columna += 2;
+        }else {
+            listaErrores.add(new ErrorLexico("-", "Carácter no reconocido", fila, columna));
+            posicion++;
+            columna++;
+        }
     }
 
     private void extraerComentarioODivision(){
+        int longitud = codigo.length();
+        if (posicion + 1 < longitud && codigo.charAt(posicion + 1) == '/') { //verifica si es un comentario o un error
+            while (posicion < longitud && codigo.charAt(posicion) != '\n') { // lee todo el comentario e ignora todo hasta que tope con un salto de linea
+                posicion++;
+                columna++;
+                // No guardamos token, solo avanzamos
+            }
+        } else if (posicion + 1 < longitud && codigo.charAt(posicion + 1) == '*') { // en vez de un comentario es un /* significa que el texto tiene un comentario gigante
+            posicion += 2;
+            columna += 2;
+            boolean cerrado = false; //sirve para encontrar el final del comentario
 
-    }
+            while (posicion < longitud - 1) { //sirve para buscar el */ para poder salir
+                char actual = codigo.charAt(posicion);
+                char siguiente = codigo.charAt(posicion + 1);
 
+                if (actual == '\n') {
+                    fila++;
+                    columna = 1;
+                    posicion++;
+                } else if (actual == '*' && siguiente == '/') { // Encontramos el cierre */
+                    posicion += 2;
+                    columna += 2;
+                    cerrado = true;
+                    break;
+                } else {
+                    posicion++;
+                    columna++;
+                }
+            }
 
-    public String getCodigo() {
-        return codigo;
-    }
-
-    public void setCodigo(String codigo) {
-        this.codigo = codigo;
-    }
-
-    public int getPosicion() {
-        return posicion;
-    }
-
-    public void setPosicion(int posicion) {
-        this.posicion = posicion;
-    }
-
-    public int getFila() {
-        return fila;
-    }
-
-    public void setFila(int fila) {
-        this.fila = fila;
-    }
-
-    public int getColumna() {
-        return columna;
-    }
-
-    public void setColumna(int columna) {
-        this.columna = columna;
+            if (!cerrado) { // Si se acabó el archivo y no lo cerraron
+                // Forzamos el fin para no trabar el ciclo
+                posicion = longitud;
+            }
+        } else {
+            // Si solo era una '/', es un error
+            listaErrores.add(new ErrorLexico("/", "Carácter no reconocido", fila, columna));
+            posicion++;
+            columna++;
+        }
     }
 
     public List<Token> getListaTokens() {
         return listaTokens;
     }
 
-    public void setListaTokens(List<Token> listaTokens) {
-        this.listaTokens = listaTokens;
-    }
-
     public List<ErrorLexico> getListaErrores() {
         return listaErrores;
-    }
-
-    public void setListaErrores(List<ErrorLexico> listaErrores) {
-        this.listaErrores = listaErrores;
-    }
-
-    public int getIdToken() {
-        return idToken;
-    }
-
-    public void setIdToken(int idToken) {
-        this.idToken = idToken;
     }
 }

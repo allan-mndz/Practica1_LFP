@@ -30,6 +30,33 @@ public class Extension {
             AnalizadorLexico analizador = new AnalizadorLexico(codigoFuente);
             analizador.analizar();
 
+            List<Token> listaTokens = analizador.getListaTokens();
+            List<ErrorLexico> listaErrores = analizador.getListaErrores();
+
+            System.out.println("\n=======================================================");
+            System.out.println("               TABLA DE TOKENS                           ");
+            System.out.println("=========================================================");
+            for (Token token : listaTokens) { // por cada token que exista dentro de mi "libreta" listaTokens, haz lo siguiente:
+                System.out.println(token.toString()); // Usamos el toString() (del objeto token) para que imprima en una sola linea alineada con todos sus datos
+            }
+
+            if (!listaErrores.isEmpty()) { // si no esta vacia muestra los errores
+                System.out.println("\n=======================================================");
+                System.out.println("                   ERRORES ENCONTRADOS                 ");
+                System.out.println("=======================================================");
+                for (ErrorLexico error : listaErrores) {
+                    System.out.println(error.toString());
+                }
+            }
+
+            System.out.println("\n--- Resumen Final ---");
+            System.out.println("Total de Tokens válidos: " + listaTokens.size()); //.size deuvleve el numero exacto de elementos guardados
+            System.out.println("Total de Errores léxicos: " + listaErrores.size());
+            System.out.println("Generando reportes...");
+
+            generarReportesHTML(listaTokens, listaErrores);
+
+
         }catch(IOException e){
             System.out.println("Error al leer archivo");
         }finally{
@@ -37,4 +64,7 @@ public class Extension {
         }
     }
 
+    public static void generarReportesHTML(List<Token> listaTokens, List<ErrorLexico> listaErrores) {
+       
+    }
 }
