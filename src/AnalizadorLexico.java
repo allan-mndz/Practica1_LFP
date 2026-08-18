@@ -27,7 +27,7 @@ public class AnalizadorLexico {
             // el char almacena un unico caracter
             char c = codigo.charAt(posicion); // saca la letra actual y la guarda en la variable
 
-            if(c == '\n'){ // saltos de linea
+            if(c == '\n'){
                 fila++;
                 columna = 1;
                 posicion++;
@@ -35,19 +35,19 @@ public class AnalizadorLexico {
             }else if(c == '\r'){
                 posicion++;
                 continue;
-            }else if(c == '\t' || c == ' '){ // tabulaciones o espacios
+            }else if(c == '\t' || c == ' '){
                 columna++;
                 posicion++;
                 continue;
             }
 
-            if(Character.isLetter(c) || c == '_'){ // si vemos una letra o un guion bajo
+            if(Character.isLetter(c) || c == '_'){
                 extraerPalabra();
-            } else if (c == '@') { // para las directivas
+            } else if (c == '@') {
                 extraerDirectiva();
             } else if (c == '"') { // para las cadenas de texto
                 extraerCadena();
-            } else if (Character.isDigit(c)) { // para numero enteros y decimales
+            } else if (Character.isDigit(c)) {
                 extraerNumero();
             } else if (c == '{' || c == '}' || c == '(' || c == ')' || c == ',' || c == '=' || c == '+') { //si la letra es uno de estos simbolos que entre
                 extraerSimboloUnico(c);
@@ -153,7 +153,7 @@ public class AnalizadorLexico {
             posicion++;
         }
 
-        if (posicion < longitud && codigo.charAt(posicion) == '"') { //se detiene porque encontro la comilla final
+        if (posicion < longitud && codigo.charAt(posicion) == '"') {
             lexema = lexema + '"';
             posicion++;
             columna++;
@@ -232,12 +232,12 @@ public class AnalizadorLexico {
         int longitud = codigo.length();
 
         if (posicion + 1 < longitud && codigo.charAt(posicion + 1) == '/') { //verifica si es un comentario o un error
-            while (posicion < longitud && codigo.charAt(posicion) != '\n') { // lee todo el comentario e ignora todo hasta que tope con un salto de linea
+            while (posicion < longitud && codigo.charAt(posicion) != '\n') {
                 posicion++;
                 columna++;
-                // No guardamos token, solo avanzamos
+
             }
-        } else if (posicion + 1 < longitud && codigo.charAt(posicion + 1) == '*') { // en vez de un comentario es un /* significa que el texto tiene un comentario gigante
+        } else if (posicion + 1 < longitud && codigo.charAt(posicion + 1) == '*') {
             posicion += 2;
             columna += 2;
             boolean cerrado = false; //sirve para encontrar el final del comentario
@@ -250,7 +250,7 @@ public class AnalizadorLexico {
                     fila++;
                     columna = 1;
                     posicion++;
-                } else if (actual == '*' && siguiente == '/') { // Encontramos el cierre */
+                } else if (actual == '*' && siguiente == '/') {
                     posicion += 2;
                     columna += 2;
                     cerrado = true;
