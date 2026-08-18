@@ -1,11 +1,8 @@
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Scanner;
-import java.util.ArrayList;
 import java.util.List;
 
 public class Extension {
@@ -65,6 +62,60 @@ public class Extension {
     }
 
     public static void generarReportesHTML(List<Token> listaTokens, List<ErrorLexico> listaErrores) {
-       
+        try {
+            // 1. GENERAR REPORTE DE TOKENS
+            StringBuilder htmlTokens = new StringBuilder();
+            htmlTokens.append("<html><head><title>Reporte de Tokens</title>\n");
+            // Agregamos un poco de CSS
+            htmlTokens.append("<style>table {width: 80%; margin: 20px auto; border-collapse: collapse; font-family: sans-serif;} \n");
+            htmlTokens.append("th, td {border: 1px solid #dddddd; padding: 8px; text-align: left;} \n");
+            htmlTokens.append("th {background-color: #f2f2f2;}</style></head><body>\n");
+            htmlTokens.append("<h2 style='text-align:center;'>Reporte de Tokens Válidos - PromptZal</h2>\n");
+            htmlTokens.append("<table><tr><th>#</th><th>Lexema</th><th>Tipo de Token</th><th>Fila</th><th>Columna</th></tr>\n");
+
+            // Recorremos la lista y creamos una fila <tr> por cada token
+            for (Token t : listaTokens) {
+                htmlTokens.append("<tr><td>").append(t.getId()).append("</td>")
+                        .append("<td>").append(t.getLexema()).append("</td>")
+                        .append("<td>").append(t.getTipo()).append("</td>")
+                        .append("<td>").append(t.getFila()).append("</td>")
+                        .append("<td>").append(t.getColumna()).append("</td></tr>\n");
+            }
+            htmlTokens.append("</table></body></html>");
+
+            // Guardamos el archivo en la carpeta del proyecto
+            Files.writeString(Paths.get("Reporte_Tokens.html"), htmlTokens.toString());
+            System.out.println("Reporte de Tokens generado: Reporte_Tokens.html");
+
+
+            // 2. GENERAR REPORTE DE ERRORES LÉXICOS
+            StringBuilder htmlErrores = new StringBuilder();
+            htmlErrores.append("<html><head><title>Reporte de Errores</title>\n");
+            htmlErrores.append("<style>table {width: 80%; margin: 20px auto; border-collapse: collapse; font-family: sans-serif;} \n");
+            htmlErrores.append("th, td {border: 1px solid #dddddd; padding: 8px; text-align: left;} \n");
+            htmlErrores.append("th {background-color: #ffcccc;}</style></head><body>\n");
+            htmlErrores.append("<h2 style='text-align:center;'>Reporte de Errores Léxicos - PromptZal</h2>\n");
+
+            // para indicar explícitamente si no hay errores
+            if (listaErrores.isEmpty()) {
+                htmlErrores.append("<h3 style='text-align:center; color:green;'>No se encontraron errores léxicos en el archivo analizado.</h3>\n");
+            } else {
+                htmlErrores.append("<table><tr><th>Carácter/Lexema</th><th>Descripción</th><th>Fila</th><th>Columna</th></tr>\n");
+                for (ErrorLexico e : listaErrores) {
+                    htmlErrores.append("<tr><td>").append(e.getLexema()).append("</td>")
+                            .append("<td>").append(e.getDescripcion()).append("</td>")
+                            .append("<td>").append(e.getFila()).append("</td>")
+                            .append("<td>").append(e.getColumna()).append("</td></tr>\n");
+                }
+                htmlErrores.append("</table>\n");
+            }
+            htmlErrores.append("</body></html>");
+
+            Files.writeString(Paths.get("Reporte_Errores.html"), htmlErrores.toString());
+            System.out.println("Reporte de Errores generado: Reporte_Errores.html");
+
+        } catch (IOException e) {
+            System.out.println("Ocurrió un error al generar los reportes HTML: " + e.getMessage());
+        }
     }
 }

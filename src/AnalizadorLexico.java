@@ -196,7 +196,7 @@ public class AnalizadorLexico {
         idToken++;
     }
 
-    private void extraerSimboloUnico(char c){ //recibe el simobolo exacto
+    private void extraerSimboloUnico(char c){ //recibe el simobolo exacto que mando el metodo principal
         String lexema = String.valueOf(c); //toma el simbolo suelto y lo introduce al texto
         String tipo;
         if (c == '=' || c == '+'){
@@ -230,6 +230,7 @@ public class AnalizadorLexico {
 
     private void extraerComentarioODivision(){
         int longitud = codigo.length();
+
         if (posicion + 1 < longitud && codigo.charAt(posicion + 1) == '/') { //verifica si es un comentario o un error
             while (posicion < longitud && codigo.charAt(posicion) != '\n') { // lee todo el comentario e ignora todo hasta que tope con un salto de linea
                 posicion++;
