@@ -49,7 +49,7 @@ public class AnalizadorLexico {
                 extraerCadena();
             } else if (Character.isDigit(c)) {
                 extraerNumero();
-            } else if (c == '{' || c == '}' || c == '(' || c == ')' || c == ',' || c == '=' || c == '+') { //si la letra es uno de estos simbolos que entre
+            } else if (c == '{' || c == '}' || c == '(' || c == ')' || c == ',' || c == '=' || c == '+' || c == ';') { //si la letra es uno de estos simbolos que entre
                 extraerSimboloUnico(c);
             } else if (c == '-') { // sirve para guiar al programa si es un error o es la primera mitdas de la flecha ->
                 extraerFlechaOGuion();
@@ -83,7 +83,7 @@ public class AnalizadorLexico {
 
         String tipoToken = "Identificador";
 
-        if (lexema.equals("AGENTE") || lexema.equals("contexto") || lexema.equals("variable") || lexema.equals("EJECUTAR") || lexema.equals("EXPORTAR")) {
+        if (lexema.equals("AGENTE") || lexema.equals("contexto") || lexema.equals("variable") || lexema.equals("EJECUTAR") || lexema.equals("EXPORTAR") || lexema.equals("CODIFICAR")) {
 
             tipoToken = "Palabra reservada";
 
@@ -128,36 +128,33 @@ public class AnalizadorLexico {
 
     private void extraerCadena(){
         int columnaInicio =  columna;
+        int filaInicio = fila;
         String lexema = "";
-        int longitud = codigo.length();
 
-        //para la comilla inicial
-        lexema = lexema + codigo.charAt(posicion);
         posicion++;
         columna++;
+        boolean cerrada = false;
 
         //leemos todo hasta enoontrar el cierre comilla
-        while (posicion < longitud && codigo.charAt(posicion) != '"'){
-
+        while (posicion < codigo.length()){
             //extraemos la letra actual para usarla en diferentes cuestiones
             char actual = codigo.charAt(posicion);
-            lexema = lexema + actual;
 
-            //por si el usuario dio enter dentro del texto
-            if (actual == '\n') {
-                fila++;
-                columna = 1;
-            } else {
+            if(actual == '"'){
+                cerrada = true;
+                posicion++;
+                columna++;
+                break;
+            }else if(actual == '\n'){
+                break;
+            }else{
+                lexema = lexema + actual;
+                posicion++;
                 columna++;
             }
-            posicion++;
         }
 
-        if (posicion < longitud && codigo.charAt(posicion) == '"') {
-            lexema = lexema + '"';
-            posicion++;
-            columna++;
-
+        if (cerrada) {
             listaTokens.add(new Token(idToken, lexema, "Literal de Cadena", fila, columnaInicio));
             idToken++;
         }else {
@@ -274,10 +271,10 @@ public class AnalizadorLexico {
     }
 
     public List<Token> getListaTokens() {
-        return listaTokens;
+        return this.listaTokens;
     }
 
     public List<ErrorLexico> getListaErrores() {
-        return listaErrores;
+        return this.listaErrores;
     }
 }
