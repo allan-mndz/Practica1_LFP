@@ -2,6 +2,8 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 public class VentanaPrincipal extends JFrame {
     private JButton btnAbrir;
@@ -14,8 +16,8 @@ public class VentanaPrincipal extends JFrame {
     private JTabbedPane tabbedPane2;
     private JButton btnReportes;
 
-    private java.util.List<Token> listaTokensActual = new java.util.ArrayList<>();
-    private java.util.List<ErrorLexico> listaErroresActual = new java.util.ArrayList<>();
+    private List<Token> listaTokensActual = new ArrayList<>();
+    private List<ErrorLexico> listaErroresActual = new ArrayList<>();
     private String codigoFuenteActual = "";
 
     public VentanaPrincipal() {
@@ -31,7 +33,7 @@ public class VentanaPrincipal extends JFrame {
                 codigoFuenteActual = txtEntrada.getText();
 
                 if (codigoFuenteActual.trim().isEmpty()) {
-                    JOptionPane.showMessageDialog(null, "El editor está vacío.", "Advertencia", JOptionPane.WARNING_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "El editor está vacio.", "Advertencia", JOptionPane.WARNING_MESSAGE);
                     return;
                 }
 
@@ -53,19 +55,19 @@ public class VentanaPrincipal extends JFrame {
 
                 StringBuilder reporteErrores = new StringBuilder();
                 if (listaErroresActual.isEmpty()) {
-                    reporteErrores.append("No se encontraron errores léxicos.\n");
+                    reporteErrores.append("No se encontraron errores lexicos.\n");
                 } else {
                     reporteErrores.append("--- ERRORES ENCONTRADOS ---\n\n");
                     for (ErrorLexico err : listaErroresActual) {
-                        reporteErrores.append("Error: '").append(err.getLexema()).append("'") // o err.getCaracter() según lo tengas
-                                .append(" | Descripción: ").append(err.getDescripcion())
+                        reporteErrores.append("Error: '").append(err.getLexema()).append("'")
+                                .append(" | Descripcion: ").append(err.getDescripcion())
                                 .append(" | Fila: ").append(err.getFila())
                                 .append(" | Columna: ").append(err.getColumna()).append("\n");
                     }
                 }
                 txtConsolaErrores.setText(reporteErrores.toString());
 
-                JOptionPane.showMessageDialog(null, "Análisis completado con éxito.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(null, "Análisis completado.", "listo", JOptionPane.INFORMATION_MESSAGE);
             }
         });
 
@@ -99,7 +101,7 @@ public class VentanaPrincipal extends JFrame {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 if (codigoFuenteActual.isEmpty() && listaTokensActual.isEmpty() && listaErroresActual.isEmpty()) {
-                    JOptionPane.showMessageDialog(null, "¡Primero debes Analizar el código para generar reportes!", "Advertencia", JOptionPane.WARNING_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "Primero debes Analizar un documento .pz para poder generar reportes", "Advertencia", JOptionPane.WARNING_MESSAGE);
                     return;
                 }
 
@@ -114,7 +116,7 @@ public class VentanaPrincipal extends JFrame {
                     // Obtenemos la ruta de la carpeta elegida
                     String rutaCarpeta = explorador.getSelectedFile().getAbsolutePath();
 
-                    // Llamamos al método pasándole la nueva ruta
+                    // Llamamos al metodo pasandole la nueva ruta
                     generarReportesHTML(listaTokensActual, listaErroresActual, codigoFuenteActual, rutaCarpeta);
                 }
             }

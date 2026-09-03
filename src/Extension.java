@@ -5,7 +5,7 @@ import java.nio.file.Paths;
 import java.util.Scanner;
 import java.util.List;
 
-public class Extension {
+/*public class Extension {
 
     public static void main(String[] args){
         Scanner sc = new Scanner(System.in);
@@ -118,4 +118,4 @@ public class Extension {
             System.out.println("Ocurrió un error al generar los reportes HTML: " + e.getMessage());
         }
     }
-}
+}*/
