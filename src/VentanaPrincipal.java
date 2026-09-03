@@ -2,6 +2,8 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -75,7 +77,25 @@ public class VentanaPrincipal extends JFrame {
         btnGuardar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                
+                JFileChooser guardar = new  JFileChooser();
+                int archivoGuardado = guardar.showSaveDialog(null);
+
+                if (archivoGuardado == JFileChooser.APPROVE_OPTION) {
+                    File archivo = guardar.getSelectedFile();
+
+                    String ruta = archivo.getPath();
+                    if(!ruta.endsWith(".pz")){
+                        archivo = new File(ruta + ".pz");
+                    }
+
+                    try(FileWriter fw = new FileWriter(archivo)){
+                        fw.write(txtEntrada.getText());
+                        JOptionPane.showMessageDialog(null, "Archivo .pz guardado con exito");
+                    }catch (IOException e){
+                        JOptionPane.showMessageDialog(null, "Error al guardar el archivo");
+                    }
+
+                }
             }
         });
 
