@@ -5,7 +5,9 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class VentanaPrincipal extends JFrame {
     private JButton btnAbrir;
@@ -17,6 +19,7 @@ public class VentanaPrincipal extends JFrame {
     private JPanel panelPrincipal;
     private JTabbedPane tabbedPane2;
     private JButton btnReportes;
+    private JButton btnGenerarAFD;
 
     private List<Token> listaTokensActual = new ArrayList<>();
     private List<ErrorLexico> listaErroresActual = new ArrayList<>();
@@ -141,22 +144,20 @@ public class VentanaPrincipal extends JFrame {
                 }
             }
         });
-    }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                VentanaPrincipal ventana = new VentanaPrincipal();
-                ventana.setVisible(true);
+        btnGenerarAFD.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                GeneradorAFD generador = new GeneradorAFD();
+                generador.crearAFD();
             }
         });
     }
 
-    private void generarReportesHTML(java.util.List<Token> tokens, java.util.List<ErrorLexico> errores, String codigoFuente, String rutaCarpeta) {
+    private void generarReportesHTML(List<Token> tokens, List<ErrorLexico> errores, String codigoFuente, String rutaCarpeta) {
         try {
-            // --- 1. REPORTE DE TOKENS ---
-            String rutaTokens = rutaCarpeta + java.io.File.separator + "Reporte_Tokens.html";
-            java.io.FileWriter fwTokens = new java.io.FileWriter(rutaTokens);
+            // REPORTE DE TOKENS
+            String rutaTokens = rutaCarpeta + File.separator + "Reporte_Tokens.html";
+            FileWriter fwTokens = new FileWriter(rutaTokens);
             fwTokens.write("<html><head><title>Reporte de Tokens</title><style>table, th, td {border: 1px solid black; border-collapse: collapse; padding: 5px;}</style></head><body>");
             fwTokens.write("<h2>Reporte de Tokens - PromptZal</h2>");
             fwTokens.write("<table><tr><th>#</th><th>Lexema</th><th>Tipo</th><th>Fila</th><th>Columna</th></tr>");
@@ -167,9 +168,9 @@ public class VentanaPrincipal extends JFrame {
             fwTokens.write("</table></body></html>");
             fwTokens.close();
 
-            // --- 2. REPORTE DE ERRORES ---
-            String rutaErrores = rutaCarpeta + java.io.File.separator + "Reporte_Errores.html";
-            java.io.FileWriter fwErrores = new java.io.FileWriter(rutaErrores);
+            // REPORTE DE ERRORES
+            String rutaErrores = rutaCarpeta + File.separator + "Reporte_Errores.html";
+            FileWriter fwErrores = new FileWriter(rutaErrores);
             fwErrores.write("<html><head><title>Reporte de Errores</title><style>table, th, td {border: 1px solid red; border-collapse: collapse; padding: 5px;}</style></head><body>");
             fwErrores.write("<h2>Reporte de Errores - PromptZal</h2>");
 
@@ -185,16 +186,16 @@ public class VentanaPrincipal extends JFrame {
             fwErrores.write("</body></html>");
             fwErrores.close();
 
-            // --- 3. REPORTE DE ESTADÍSTICAS ---
-            java.util.Map<String, Integer> frecuencias = new java.util.HashMap<>();
+            // REPORTE DE ESTADÍSTICAS
+            Map<String, Integer> frecuencias = new HashMap<>();
             for (Token t : tokens) {
                 frecuencias.put(t.getTipo(), frecuencias.getOrDefault(t.getTipo(), 0) + 1);
             }
 
             int totalLineas = codigoFuente.isEmpty() ? 0 : codigoFuente.split("\n").length;
 
-            String rutaStats = rutaCarpeta + java.io.File.separator + "Reporte_Estadisticas.html";
-            java.io.FileWriter fwStats = new java.io.FileWriter(rutaStats);
+            String rutaStats = rutaCarpeta + File.separator + "Reporte_Estadisticas.html";
+            FileWriter fwStats = new FileWriter(rutaStats);
             fwStats.write("<html><head><title>Estadísticas</title><style>table, th, td {border: 1px solid blue; border-collapse: collapse; padding: 5px;}</style></head><body>");
             fwStats.write("<h2>Reporte de Estadísticas</h2>");
 
@@ -205,7 +206,7 @@ public class VentanaPrincipal extends JFrame {
 
             fwStats.write("<h3>Frecuencia por Tipo de Token</h3>");
             fwStats.write("<table><tr><th>Tipo de Token</th><th>Cantidad Encontrada</th></tr>");
-            for (java.util.Map.Entry<String, Integer> entry : frecuencias.entrySet()) {
+            for (Map.Entry<String, Integer> entry : frecuencias.entrySet()) {
                 fwStats.write("<tr><td>" + entry.getKey() + "</td><td>" + entry.getValue() + "</td></tr>");
             }
             fwStats.write("</table></body></html>");
