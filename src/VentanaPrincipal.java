@@ -147,8 +147,18 @@ public class VentanaPrincipal extends JFrame {
         btnGenerarAFD.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                GeneradorAFD generador = new GeneradorAFD();
-                generador.crearAFD();
+                JFileChooser explorador = new JFileChooser();
+                explorador.setDialogTitle("Selecciona dónde guardar la imagen del autómata");
+                explorador.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+
+                int seleccion = explorador.showSaveDialog(null);
+
+                if (seleccion == JFileChooser.APPROVE_OPTION) {
+                    String rutaCarpeta = explorador.getSelectedFile().getAbsolutePath();
+
+                    GeneradorAFD generador = new GeneradorAFD();
+                    generador.crearAFD(rutaCarpeta);
+                }
             }
         });
     }
