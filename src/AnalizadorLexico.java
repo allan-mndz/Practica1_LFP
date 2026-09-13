@@ -128,12 +128,11 @@ public class AnalizadorLexico {
 
     private void extraerCadena(){
         int columnaInicio =  columna;
-        int filaInicio = fila;
         String lexema = "";
+        boolean cerrada = false;
 
         posicion++;
         columna++;
-        boolean cerrada = false;
 
         //leemos todo hasta enoontrar el cierre comilla
         while (posicion < codigo.length()){
@@ -165,8 +164,8 @@ public class AnalizadorLexico {
     private void extraerNumero(){
         int columnaInicio = columna;
         String lexema = "";
-        boolean tienePunto = false;
         int longitud = codigo.length();
+        boolean tienePunto = false;
 
         while(posicion < longitud){
             char actual = codigo.charAt(posicion);
@@ -232,7 +231,6 @@ public class AnalizadorLexico {
             while (posicion < longitud && codigo.charAt(posicion) != '\n') {
                 posicion++;
                 columna++;
-
             }
         } else if (posicion + 1 < longitud && codigo.charAt(posicion + 1) == '*') {
             posicion += 2;

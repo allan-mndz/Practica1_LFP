@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="Practica1_LFP:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/Practica1_LFP_jar</output-path>
+    <root id="archive" name="Practica1_LFP.jar">
+      <element id="module-output" name="Practica1_LFP" />
+    </root>
+  </artifact>
+</component>

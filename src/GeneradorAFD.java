@@ -6,7 +6,10 @@ public class GeneradorAFD {
 
     public void crearAFD(String rutaCarpeta) {
 
+        // almacena la estructura completa del grafo y utiliza bloques de texto (""") multilinea
         String codigoDOT = """
+            
+            //inicializa el grafo dirigido con flechas
             digraph AFD {
                 
                 // flecha del estado inicial
@@ -109,6 +112,7 @@ public class GeneradorAFD {
             }
             """;
         try {
+            // sirve para guardar la imagen y el dot directamente con sus nombres donde sea que lo guardemos
             String rutaDot = rutaCarpeta + File.separator + "automata.dot";
             String rutaPng = rutaCarpeta + File.separator + "automata.png";
 
@@ -116,13 +120,13 @@ public class GeneradorAFD {
             File archivoDot = new File(rutaDot);
             FileWriter escritor = new FileWriter(archivoDot);
             escritor.write(codigoDOT);
-            escritor.close();
+            escritor.close(); // guarda los cambios
 
             // Le pasamos las nuevas rutas exactas a Graphviz
-            ProcessBuilder pb = new ProcessBuilder("dot", "-Tpng", rutaDot, "-o", rutaPng);
-            pb.inheritIO();
+            ProcessBuilder pb = new ProcessBuilder("dot", "-Tpng", rutaDot, "-o", rutaPng); // comunicacion entre java y la teminal es como escribir eso en la terminal para generar la imagen
+            pb.inheritIO(); // la salida de lo que diria la terminal nos lo dice en nuestra consola
             Process proceso = pb.start();
-            proceso.waitFor();
+            proceso.waitFor(); // sirve para pausar la ejecucion y asi darle tiempo a Graphviz para terminar el dibujo
 
             JOptionPane.showMessageDialog(null, "Grafo generado exitosamente en:\n" + rutaPng, "Graphviz", JOptionPane.INFORMATION_MESSAGE);
 

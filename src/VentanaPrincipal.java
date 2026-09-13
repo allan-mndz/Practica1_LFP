@@ -4,6 +4,7 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -23,7 +24,7 @@ public class VentanaPrincipal extends JFrame {
 
     private List<Token> listaTokensActual = new ArrayList<>();
     private List<ErrorLexico> listaErroresActual = new ArrayList<>();
-    private String codigoFuenteActual = "";
+    private String lexema = "";
 
     public VentanaPrincipal() {
         setContentPane(panelPrincipal);
@@ -35,22 +36,24 @@ public class VentanaPrincipal extends JFrame {
         btnAnalizar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                codigoFuenteActual = txtEntrada.getText();
+                lexema = txtEntrada.getText();
 
-                if (codigoFuenteActual.trim().isEmpty()) {
+                if (lexema.trim().isEmpty()) { // verifica si no hay texto o solo tiene espacios
                     JOptionPane.showMessageDialog(null, "El editor está vacio.", "Advertencia", JOptionPane.WARNING_MESSAGE);
                     return;
                 }
 
-                AnalizadorLexico analizador = new AnalizadorLexico(codigoFuenteActual);
+                AnalizadorLexico analizador = new AnalizadorLexico(lexema);
                 analizador.analizar();
 
+                // pedimos las dos listas que el analizador lexico hizo
                 listaTokensActual = analizador.getListaTokens();
                 listaErroresActual = analizador.getListaErrores();
 
                 StringBuilder reporteTokens = new StringBuilder();
                 reporteTokens.append("--- TOKENS RECONOCIDOS ---\n\n");
-                for (Token t : listaTokensActual) {
+
+                for (Token t : listaTokensActual) { // por cada token que exista dentro de mi listaTokens, haz lo siguiente:
                     reporteTokens.append("Lexema: '").append(t.getLexema()).append("'")
                             .append(" | Tipo: ").append(t.getTipo())
                             .append(" | Fila: ").append(t.getFila())
@@ -62,7 +65,7 @@ public class VentanaPrincipal extends JFrame {
                 if (listaErroresActual.isEmpty()) {
                     reporteErrores.append("No se encontraron errores lexicos.\n");
                 } else {
-                    reporteErrores.append("--- ERRORES ENCONTRADOS ---\n\n");
+                    reporteErrores.append("--- ERRORES ENCONTRADOS ---\n\n"); // por cada error que exista dentro de mi listaErroes, haz lo siguiente:
                     for (ErrorLexico err : listaErroresActual) {
                         reporteErrores.append("Error: '").append(err.getLexema()).append("'")
                                 .append(" | Descripcion: ").append(err.getDescripcion())
@@ -112,7 +115,7 @@ public class VentanaPrincipal extends JFrame {
                 if (resultado == JFileChooser.APPROVE_OPTION) {
                     File archivoSeleccionado = explorador.getSelectedFile();
                     try {
-                        String contenido = java.nio.file.Files.readString(archivoSeleccionado.toPath());
+                        String contenido = Files.readString(archivoSeleccionado.toPath());
                         txtEntrada.setText(contenido);
                     }catch (Exception ex){
                         JOptionPane.showMessageDialog(null, ex.getMessage());
@@ -120,10 +123,11 @@ public class VentanaPrincipal extends JFrame {
                 }
             }
         });
+
         btnReportes.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                if (codigoFuenteActual.isEmpty() && listaTokensActual.isEmpty() && listaErroresActual.isEmpty()) {
+                if (lexema.isEmpty() && listaTokensActual.isEmpty() && listaErroresActual.isEmpty()) {
                     JOptionPane.showMessageDialog(null, "Primero debes Analizar un documento .pz para poder generar reportes", "Advertencia", JOptionPane.WARNING_MESSAGE);
                     return;
                 }
@@ -140,10 +144,11 @@ public class VentanaPrincipal extends JFrame {
                     String rutaCarpeta = explorador.getSelectedFile().getAbsolutePath();
 
                     // Llamamos al metodo pasandole la nueva ruta
-                    generarReportesHTML(listaTokensActual, listaErroresActual, codigoFuenteActual, rutaCarpeta);
+                    generarReportesHTML(listaTokensActual, listaErroresActual, lexema, rutaCarpeta);
                 }
             }
         });
+
         btnGenerarAFD.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
