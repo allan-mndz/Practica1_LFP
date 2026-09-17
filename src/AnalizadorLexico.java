@@ -6,18 +6,18 @@ public class AnalizadorLexico {
     private int posicion;
     private int fila;
     private int columna;
+    private int idToken;
     private List<Token> listaTokens;
     private List<ErrorLexico> listaErrores;
-    private int idToken;
 
     public AnalizadorLexico(String codigo) {
         this.codigo = codigo;
         this.posicion = 0;
         this.fila = 1;
         this.columna = 1;
+        this.idToken = 0;
         this.listaTokens = new ArrayList<>();
         this.listaErrores = new ArrayList<>();
-        this.idToken = 0;
     }
 
     public void analizar(){

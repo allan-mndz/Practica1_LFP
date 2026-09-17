@@ -50,11 +50,12 @@ public class VentanaPrincipal extends JFrame {
                 listaTokensActual = analizador.getListaTokens();
                 listaErroresActual = analizador.getListaErrores();
 
-                StringBuilder reporteTokens = new StringBuilder();
-                reporteTokens.append("--- TOKENS RECONOCIDOS ---\n\n");
+                StringBuilder reporteTokens = new StringBuilder(); //sirve para concatenar grandes cantidades de texto
 
-                for (Token t : listaTokensActual) { // por cada token que exista dentro de mi listaTokens, haz lo siguiente:
-                    reporteTokens.append("Lexema: '").append(t.getLexema()).append("'")
+                reporteTokens.append("--- TOKENS RECONOCIDOS ---\n\n");
+                for (Token t : listaTokensActual) { // por cada token que exista dentro de mi listaTokensActual, haz lo siguiente:
+                    reporteTokens.append("ID: '").append(t.getId()).append("'")
+                            .append(" | Lexema: ").append(t.getLexema())
                             .append(" | Tipo: ").append(t.getTipo())
                             .append(" | Fila: ").append(t.getFila())
                             .append(" | Columna: ").append(t.getColumna()).append("\n");
@@ -153,7 +154,7 @@ public class VentanaPrincipal extends JFrame {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 JFileChooser explorador = new JFileChooser();
-                explorador.setDialogTitle("Selecciona dónde guardar la imagen del autómata");
+                explorador.setDialogTitle("Selecciona donde guardar la imagen del AFD");
                 explorador.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 
                 int seleccion = explorador.showSaveDialog(null);
@@ -173,12 +174,49 @@ public class VentanaPrincipal extends JFrame {
             // REPORTE DE TOKENS
             String rutaTokens = rutaCarpeta + File.separator + "Reporte_Tokens.html";
             FileWriter fwTokens = new FileWriter(rutaTokens);
+
             fwTokens.write("<html><head><title>Reporte de Tokens</title><style>table, th, td {border: 1px solid black; border-collapse: collapse; padding: 5px;}</style></head><body>");
             fwTokens.write("<h2>Reporte de Tokens - PromptZal</h2>");
             fwTokens.write("<table><tr><th>#</th><th>Lexema</th><th>Tipo</th><th>Fila</th><th>Columna</th></tr>");
 
             for (Token t : tokens) {
-                fwTokens.write("<tr><td>" + t.getId() + "</td><td>" + t.getLexema() + "</td><td>" + t.getTipo() + "</td><td>" + t.getFila() + "</td><td>" + t.getColumna() + "</td></tr>");
+                String colorFondo = "";
+
+                // Convertimos a mayúsculas para evitar problemas de texto (puedes ajustar los nombres exactos a como los tienes en tu código)
+                switch (t.getTipo().toUpperCase()) {
+                    case "DIRECTIVA":
+                        colorFondo = "#cce5ff"; // Azul muy claro
+                        break;
+                    case "NUMERO ENTERO":
+                    case "NUMERO DECIMAL":
+                        colorFondo = "#d4edda"; // Verde claro
+                        break;
+                    case "PALABRA RESERVADA":
+                    case "COMANDO":
+                        colorFondo = "#fff3cd"; // Amarillo
+                        break;
+                    case "CADENA DE TEXTO":
+                        colorFondo = "#f8d7da"; // Rosa
+                        break;
+                    case "IDENTIFICADOR":
+                        colorFondo = "#e2e3e5"; // Gris claro
+                        break;
+                    case "COMENTARIO":
+                        colorFondo = "#d1ecf1"; // Turquesa claro
+                        break;
+                    default:
+                        colorFondo = "#ffffff"; // Blanco
+                        break;
+                }
+
+                // Inyectamos el color exacto en la etiqueta <tr> de esta fila
+                fwTokens.write("<tr style='background-color: " + colorFondo + ";'>" +
+                        "<td>" + t.getId() + "</td>" +
+                        "<td>" + t.getLexema() + "</td>" +
+                        "<td>" + t.getTipo() + "</td>" +
+                        "<td>" + t.getFila() + "</td>" +
+                        "<td>" + t.getColumna() + "</td>" +
+                        "</tr>");
             }
             fwTokens.write("</table></body></html>");
             fwTokens.close();
@@ -212,7 +250,7 @@ public class VentanaPrincipal extends JFrame {
             String rutaStats = rutaCarpeta + File.separator + "Reporte_Estadisticas.html";
             FileWriter fwStats = new FileWriter(rutaStats);
             fwStats.write("<html><head><title>Estadísticas</title><style>table, th, td {border: 1px solid blue; border-collapse: collapse; padding: 5px;}</style></head><body>");
-            fwStats.write("<h2>Reporte de Estadísticas</h2>");
+            fwStats.write("<h2>Reporte de Estadisticas</h2>");
 
             fwStats.write("<h3>Resumen General</h3>");
             fwStats.write("<ul><li><b>Total de Tokens:</b> " + tokens.size() + "</li>");
@@ -227,7 +265,7 @@ public class VentanaPrincipal extends JFrame {
             fwStats.write("</table></body></html>");
             fwStats.close();
 
-            JOptionPane.showMessageDialog(null, "¡Reportes guardados exitosamente en:\n" + rutaCarpeta);
+            JOptionPane.showMessageDialog(null, "Reportes guardados exitosamente en:\n" + rutaCarpeta);
 
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(null, "Error al generar reportes: " + ex.getMessage());
