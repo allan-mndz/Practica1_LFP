@@ -35,6 +35,7 @@ public class GeneradorAFD {
                 S22 [shape = doublecircle];
                 S23 [shape = doublecircle];
                 S24 [shape = doublecircle];
+                S25 [shape = doublecircle];
   
                 // nodos normales
                 S3 [shape = circle];
@@ -100,6 +101,8 @@ public class GeneradorAFD {
                 
                 S0 -> S17 [label = " = "];
                 S0 -> S18 [label = " + "];
+                
+                S0 -> S25 [label = " # "];
                 
                 // delimitadores
                 

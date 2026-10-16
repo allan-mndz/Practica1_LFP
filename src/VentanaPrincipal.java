@@ -43,12 +43,34 @@ public class VentanaPrincipal extends JFrame {
                     return;
                 }
 
-                AnalizadorLexico analizador = new AnalizadorLexico(lexema);
-                analizador.analizar();
+                listaTokensActual.clear();
+                listaErroresActual.clear();
+                List<ErrorLexico> listaErroresSintacticos = new ArrayList<>();
 
-                // pedimos las dos listas que el analizador lexico hizo
-                listaTokensActual = analizador.getListaTokens();
-                listaErroresActual = analizador.getListaErrores();
+                try {
+                    LexerPromptZal lexer = new LexerPromptZal(new StringBuilder(lexema));
+
+                    while (true){
+
+                        Token token = lexer.yylex();
+
+                        if (token == null || token.getTipo().equals("EOF")){
+                            listaTokensActual.add(new Token("EOF", "FIN", token.getFila(), token.getColumna()));
+                            break;
+                        }
+
+                        if (token.getTipo().equals("ERROR_LEXICO")){
+                            listaErroresActual.add(new ErrorLexico(token.getLexema(), "Caracter lexico no reconocido", token.getFila(), token.getColumna()));
+                        }else {
+                            listaTokensActual.add(token);
+                        }
+
+                    }
+
+                }catch (Exception ex){
+                    JOptionPane.showMessageDialog(null, "Error crítico: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                }
+
 
                 StringBuilder reporteTokens = new StringBuilder(); //sirve para concatenar grandes cantidades de texto
 

@@ -5,12 +5,12 @@ public class Token {
     private int fila;
     private int columna;
 
-    public Token(int idToken, String lexema, String tipo, int fila, int columna) {
-        this.idToken = idToken;
-        this.lexema = lexema;
+    public Token(String tipo, String lexema, int fila, int columna) {
         this.tipo = tipo;
+        this.lexema = lexema;
         this.fila = fila;
         this.columna = columna;
+        this.idToken = 0;
     }
 
     public int getId() {

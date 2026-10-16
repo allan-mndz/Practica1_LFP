@@ -1,4 +1,4 @@
-import java.util.ArrayList;
+/*import java.util.ArrayList;
 import java.util.List;
 
 public class AnalizadorLexico {
@@ -49,7 +49,7 @@ public class AnalizadorLexico {
                 extraerCadena();
             } else if (Character.isDigit(c)) {
                 extraerNumero();
-            } else if (c == '{' || c == '}' || c == '(' || c == ')' || c == ',' || c == '=' || c == '+' || c == ';') { //si la letra es uno de estos simbolos que entre
+            } else if (c == '{' || c == '}' || c == '(' || c == ')' || c == ',' || c == '=' || c == '+' || c == ';' || c == '#') { //si la letra es uno de estos simbolos que entre
                 extraerSimboloUnico(c);
             } else if (c == '-') { // sirve para guiar al programa si es un error o es la primera mitdas de la flecha ->
                 extraerFlechaOGuion();
@@ -195,7 +195,7 @@ public class AnalizadorLexico {
     private void extraerSimboloUnico(char c){ //recibe el simobolo exacto que mando el metodo principal
         String lexema = String.valueOf(c); //toma el simbolo suelto y lo introduce al texto
         String tipo;
-        if (c == '=' || c == '+'){
+        if (c == '=' || c == '+' || c == '#'){
             tipo = "Operador";
         }else{
             tipo = "Delimitador";
@@ -237,7 +237,7 @@ public class AnalizadorLexico {
             columna += 2;
             boolean cerrado = false; //sirve para encontrar el final del comentario
 
-            while (posicion < longitud - 1) { //sirve para buscar el */ para poder salir
+            while (posicion < longitud - 1) { //sirve para buscar el  para poder salir
                 char actual = codigo.charAt(posicion);
                 char siguiente = codigo.charAt(posicion + 1);
 
@@ -276,3 +276,4 @@ public class AnalizadorLexico {
         return this.listaErrores;
     }
 }
+*/
