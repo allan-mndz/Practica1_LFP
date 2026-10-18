@@ -7,10 +7,14 @@ public class Parser {
 
     private List<Token> tokens;
     private List<ErrorLexico> erroresSintacticos;
+    private List<Agente> listaAgentes;
+
+    private boolean modoPanico = false;
 
     public Parser(List<Token> tokens) {
         this.tokens = tokens;
         this.erroresSintacticos = new ArrayList<>();
+        this.listaAgentes = new ArrayList<>();
         this.posicionActual = -1;
         avanzar();
     }
@@ -26,30 +30,39 @@ public class Parser {
 
     private void match(String tipoEsperado){
         if (tokenActual.getTipo().equals(tipoEsperado)){
+            modoPanico = false;
             avanzar();
         }else{
-            String descripcionError = String.format("Se esperaba '%s' pero encontro '%s'", tipoEsperado, tokenActual.getTipo());
+            if (!modoPanico){
+                String descripcionError = String.format("Se esperaba '%s' pero encontro '%s'", tipoEsperado, tokenActual.getTipo());
 
-            ErrorLexico nuevoError = new ErrorLexico(tokenActual.getLexema(), descripcionError, tokenActual.getFila(), tokenActual.getColumna());
+                ErrorLexico nuevoError = new ErrorLexico(tokenActual.getLexema(), descripcionError, tokenActual.getFila(), tokenActual.getColumna());
 
-            erroresSintacticos.add(nuevoError);
+                erroresSintacticos.add(nuevoError);
+                modoPanico = true;
+            }
             recuperacionModoPanico();
         }
     }
 
     private void recuperacionModoPanico(){
+        if (esTokenValido(tokenActual.getTipo()) || tokenActual.getTipo().equals("EOF")){
+            return;
+        }
+
         avanzar();
-
-        while (!tokenActual.getTipo().equals("AGENTE") &&
-                !tokenActual.getTipo().equals("LLAVE_C") &&
-                !tokenActual.getTipo().equals("COMANDO_IA") &&
-                !tokenActual.getTipo().equals("VARIABLE") &&
-                !tokenActual.getTipo().equals("EJECUTAR") &&
-                !tokenActual.getTipo().equals("EXPORTAR") &&
-                !tokenActual.getTipo().equals("EOF")) {
-
+        while (!esTokenValido(tokenActual.getTipo()) && !tokenActual.getTipo().equals("EOF")) {
             avanzar();
         }
+    }
+
+    private boolean esTokenValido(String tipo) {
+        return tipo.equals("AGENTE") ||
+                tipo.equals("LLAVE_C") ||
+                tipo.equals("COMANDO_IA") ||
+                tipo.equals("VARIABLE") ||
+                tipo.equals("EJECUTAR") ||
+                tipo.equals("EXPORTAR");
     }
 
     public void parsePrograma() {
@@ -88,50 +101,65 @@ public class Parser {
 
     private void parseAgente(){
         match("AGENTE");
+
+        //guardamos el dato antes de seguir avanzando
+        String nombreAgente = tokenActual.getLexema();
         match("ID");
+
+        //creamos el circulo inicial
+        Agente nuevoAgente = new Agente(nombreAgente);
+
         match("LLAVE_A");
 
-        parseContexto();
-        parseVariables();
-        parseComandos();
+        parseContexto(nuevoAgente);
+        parseVariables(nuevoAgente);
+        parseComandos(nuevoAgente);
 
         match("LLAVE_C");
+
+        listaAgentes.add(nuevoAgente);
     }
 
-    private void parseContexto(){
+    private void parseContexto(Agente agenteActual){
         match("CONTEXTO");
         match("IGUAL");
+
+        //Atrapamos el texto del contexto antes de avanzar
+        String textoContexto = tokenActual.getLexema();
         match("CADENA");
+
+        //Lo guardamos en la memoria del agente
+        agenteActual.setContexto(textoContexto);
     }
 
-    private void parseVariables(){
+    private void parseVariables(Agente nuevoAgente){
         if (tokenActual.getTipo().equals("VARIABLE")){
             match("VARIABLE");
             match("ID");
             match("IGUAL");
 
             parseExpresion();
-            parseVariables();
+            parseVariables(nuevoAgente);
         }else{
             return;
         }
     }
 
-    private void parseComandos(){
-        parseComando();
-        parseMasComandos();
+    private void parseComandos(Agente agenteActual){
+        parseComando(agenteActual);
+        parseMasComandos(agenteActual);
     }
 
-    private void parseMasComandos(){
+    private void parseMasComandos(Agente agenteActual){
         if (tokenActual.getTipo().equals("COMANDO_IA")){
-            parseComando();
-            parseMasComandos();
+            parseComando(agenteActual);
+            parseMasComandos(agenteActual);
         }else {
             return;
         }
     }
 
-    private void parseComando(){
+    private void parseComando(Agente agenteActual){
         match("COMANDO_IA");
 
         parseExpresion();

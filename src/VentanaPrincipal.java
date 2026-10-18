@@ -4,6 +4,7 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.StringReader;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -43,15 +44,17 @@ public class VentanaPrincipal extends JFrame {
                     return;
                 }
 
+                //por si se compila dos veces
                 listaTokensActual.clear();
                 listaErroresActual.clear();
                 List<ErrorLexico> listaErroresSintacticos = new ArrayList<>();
 
                 try {
-                    LexerPromptZal lexer = new LexerPromptZal(new StringBuilder(lexema));
+
+                    //analisis lexico
+                    LexerPromptZal lexer = new LexerPromptZal(new StringReader(lexema));
 
                     while (true){
-
                         Token token = lexer.yylex();
 
                         if (token == null || token.getTipo().equals("EOF")){
@@ -64,20 +67,23 @@ public class VentanaPrincipal extends JFrame {
                         }else {
                             listaTokensActual.add(token);
                         }
-
                     }
+
+                    Parser analizadorSintactico = new Parser(listaTokensActual);
+                    analizadorSintactico.parsePrograma();
+
+                    listaErroresSintacticos = analizadorSintactico.getErroresSintacticos();
 
                 }catch (Exception ex){
                     JOptionPane.showMessageDialog(null, "Error crítico: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
                 }
-
 
                 StringBuilder reporteTokens = new StringBuilder(); //sirve para concatenar grandes cantidades de texto
 
                 reporteTokens.append("--- TOKENS RECONOCIDOS ---\n\n");
                 for (Token t : listaTokensActual) { // por cada token que exista dentro de mi listaTokensActual, haz lo siguiente:
-                    reporteTokens.append("ID: '").append(t.getId()).append("'")
-                            .append(" | Lexema: ").append(t.getLexema())
+                    reporteTokens.append(" | Lexema: ").append(t.getLexema()).append("'")
                             .append(" | Tipo: ").append(t.getTipo())
                             .append(" | Fila: ").append(t.getFila())
                             .append(" | Columna: ").append(t.getColumna()).append("\n");
@@ -85,20 +91,32 @@ public class VentanaPrincipal extends JFrame {
                 txtConsolaTokens.setText(reporteTokens.toString());
 
                 StringBuilder reporteErrores = new StringBuilder();
-                if (listaErroresActual.isEmpty()) {
-                    reporteErrores.append("No se encontraron errores lexicos.\n");
+                if (listaErroresActual.isEmpty() && listaErroresSintacticos.isEmpty()) {
+                    reporteErrores.append("No se encontraron errores lexicos ni sintacticos.\n");
+                    JOptionPane.showMessageDialog(null, "Analisis completado sin errores.", "Exito", JOptionPane.INFORMATION_MESSAGE);
                 } else {
-                    reporteErrores.append("--- ERRORES ENCONTRADOS ---\n\n"); // por cada error que exista dentro de mi listaErroes, haz lo siguiente:
+                    reporteErrores.append("--- ERRORES ENCONTRADOS ---\n\n");
+
+                    // Imprimimos los errores léxicos
                     for (ErrorLexico err : listaErroresActual) {
-                        reporteErrores.append("Error: '").append(err.getLexema()).append("'")
+                        reporteErrores.append(" Errores LEXICOS: '").append(err.getLexema()).append("'")
                                 .append(" | Descripcion: ").append(err.getDescripcion())
                                 .append(" | Fila: ").append(err.getFila())
                                 .append(" | Columna: ").append(err.getColumna()).append("\n");
                     }
-                }
-                txtConsolaErrores.setText(reporteErrores.toString());
 
-                JOptionPane.showMessageDialog(null, "Análisis completado.", "listo", JOptionPane.INFORMATION_MESSAGE);
+                    // Imprimimos los errores sintácticos
+                    for (ErrorLexico err : listaErroresSintacticos) {
+                        reporteErrores.append("Errores SINTACTICOS: '").append(err.getLexema()).append("'")
+                                .append(" | Descripcion: ").append(err.getDescripcion())
+                                .append(" | Fila: ").append(err.getFila())
+                                .append(" | Columna: ").append(err.getColumna()).append("\n");
+                    }
+
+                    JOptionPane.showMessageDialog(null, "Analisis completado con errores. Revisa la consola.", "Advertencia", JOptionPane.WARNING_MESSAGE);
+                }
+
+                txtConsolaErrores.setText(reporteErrores.toString());
             }
         });
 
