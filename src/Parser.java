@@ -3,15 +3,15 @@ import java.util.List;
 
 public class Parser {
     private int posicionActual;
+    private boolean modoPanico = false;
     private Token tokenActual;
-
     private List<Token> tokens;
     private List<ErrorLexico> erroresSintacticos;
-    private List<Agente> listaAgentes;
-    private List<String> ejecuciones;
-    private List<String> exportaciones;
 
-    private boolean modoPanico = false;
+    // cajas que sirven para guardar los datos utiles
+    private List<Agente> listaAgentes;
+    private List<Token> ejecuciones;
+    private List<Token> exportaciones;
 
     public Parser(List<Token> tokens) {
         this.tokens = tokens;
@@ -37,7 +37,7 @@ public class Parser {
             modoPanico = false;
             avanzar();
         }else{
-            if (!modoPanico){
+            if (modoPanico == false){
                 String descripcionError = String.format("Se esperaba '%s' pero encontro '%s'", tipoEsperado, tokenActual.getTipo());
 
                 ErrorLexico nuevoError = new ErrorLexico(tokenActual.getLexema(), descripcionError, tokenActual.getFila(), tokenActual.getColumna());
@@ -53,7 +53,7 @@ public class Parser {
         if (esTokenValido(tokenActual.getTipo()) || tokenActual.getTipo().equals("EOF")){
             return;
         }
-
+        // dejamos los errores atras y avanzamos
         avanzar();
         while (!esTokenValido(tokenActual.getTipo()) && !tokenActual.getTipo().equals("EOF")) {
             avanzar();
@@ -108,10 +108,12 @@ public class Parser {
 
         //guardamos el dato antes de seguir avanzando
         String nombreAgente = tokenActual.getLexema();
+        int fila = tokenActual.getFila();
+        int columna = tokenActual.getColumna();
         match("ID");
 
         //creamos el circulo inicial
-        Agente nuevoAgente = new Agente(nombreAgente);
+        Agente nuevoAgente = new Agente(nombreAgente, fila, columna);
 
         match("LLAVE_A");
 
@@ -128,7 +130,7 @@ public class Parser {
         match("CONTEXTO");
         match("IGUAL");
 
-        //Atrapamos el texto del contexto antes de avanzar
+        //como solo es texto lo guardamos en un string
         String textoContexto = tokenActual.getLexema();
         match("CADENA");
 
@@ -138,17 +140,21 @@ public class Parser {
 
     private void parseVariables(Agente agenteActual){
         if (tokenActual.getTipo().equals("VARIABLE")){
+            match("VARIABLE");
 
             //atrapamos el nombre de la variable
             String nombreVariable = tokenActual.getLexema();
+            int fila = tokenActual.getFila();
+            int columna = tokenActual.getColumna();
             match("ID");
 
             match("IGUAL");
 
-            //que nos devuelva el texto completo <expresion>
+            //guardadr <expresion> en un string
             String valorVariable = parseExpresion();
 
-            Variable nuevaVariable = new Variable(nombreVariable, valorVariable);
+            // se tiene el nombreVariable y valorVariable los guardamos
+            Variable nuevaVariable = new Variable(nombreVariable, valorVariable, fila, columna);
             agenteActual.agregarVariable(nuevaVariable);
 
             parseVariables(agenteActual);
@@ -172,20 +178,22 @@ public class Parser {
     }
 
     private void parseComando(Agente agenteActual){
-        String tipoComando = tokenActual.getLexema(); // Atrapamos PREGUNTAR, RESUMIR y los demas
+        String tipoComando = tokenActual.getLexema();
+        int fila = tokenActual.getFila();
+        int columna = tokenActual.getColumna();
         match("COMANDO_IA");
 
         // Recibimos los textos armados
-        String argumento = parseExpresion();
+        String expresion = parseExpresion();
         String conectores = parseConectores();
 
         match("FLECHA");
 
-        String destino = tokenActual.getLexema(); // Atrapamos la variable donde se guarda
+        String destino = tokenActual.getLexema();
         match("ID");
 
         // Creamos el comando y lo guardamos en el agente
-        Comando nuevoComando = new Comando(tipoComando, argumento, conectores, destino);
+        Comando nuevoComando = new Comando(tipoComando, expresion, conectores, destino, fila, columna);
         agenteActual.agregarComando(nuevoComando);
     }
 
@@ -197,7 +205,7 @@ public class Parser {
             String expresion = parseExpresion();
             String masConectores = parseConectores();
 
-            // Retornamos el texto armado con espacios
+            // devolvemos el texto armado con espacios
             return conector + " " + expresion + " " + masConectores;
         }else {
             return "";
@@ -208,7 +216,6 @@ public class Parser {
         String termino = parseTermino();
         String masTerminos = parseMasTerminos();
 
-        // Unimos el primer pedazo con los demas
         return termino + masTerminos;
     }
 
@@ -237,13 +244,13 @@ public class Parser {
         } else if (tokenActual.getTipo().equals("NUMERO")) {
             valor = tokenActual.getLexema(); // Atrapamos el número
             match("NUMERO");
-            valor += parseUnidad(); // Le pegamos la palabra de la unidad
+            valor = parseUnidad() + valor;
 
         } else if (tokenActual.getTipo().equals("CARGAR")) {
-            valor = parseCargar(); // Recibimos toda la instrucción CARGAR
+            valor = parseCargar(); // Recibimos toda la instrucción cargar
 
         } else {
-            match("TERMINO_VALIDO");
+            match("TERMINO_INVALIDO");
         }
 
         return valor;
@@ -275,9 +282,9 @@ public class Parser {
 
     private void parseEjecuciones() {
         match("EJECUTAR");
-        String nombreEjecutar = tokenActual.getLexema();
+        Token tokenEjecutar = tokenActual;
         match("ID");
-        ejecuciones.add(nombreEjecutar);
+        ejecuciones.add(tokenEjecutar);
 
         parseMasEjecuciones();
     }
@@ -286,9 +293,9 @@ public class Parser {
         if (tokenActual.getTipo().equals("EJECUTAR")){
             match("EJECUTAR");
 
-            String nombreEjecutar = tokenActual.getLexema();
+            Token tokenEjecutar = tokenActual;
             match("ID");
-            ejecuciones.add(nombreEjecutar);
+            ejecuciones.add(tokenEjecutar);
 
             parseMasEjecuciones();
         }else{
@@ -298,9 +305,9 @@ public class Parser {
 
     private void parseExportar() {
         match("EXPORTAR");
-        String nombreExportar = tokenActual.getLexema();
+        Token tokenExportar = tokenActual;
         match("ID");
-        exportaciones.add(nombreExportar);
+        exportaciones.add(tokenExportar);
 
         parseMasIds();
     }
@@ -308,10 +315,9 @@ public class Parser {
     private void parseMasIds(){
         if (tokenActual.getTipo().equals("COMA")){
             match("COMA");
-
-            String nombreExportar = tokenActual.getLexema();
+            Token tokenExportar = tokenActual;
             match("ID");
-            exportaciones.add(nombreExportar);
+            exportaciones.add(tokenExportar);
 
             parseMasIds();
         }else {
@@ -320,6 +326,9 @@ public class Parser {
     }
 
     public List<Agente> getListaAgentes() { return listaAgentes; }
-    public List<String> getEjecuciones() { return ejecuciones; }
-    public List<String> getExportaciones() { return exportaciones; }
+    public List<Token> getEjecuciones() { return ejecuciones; }
+    public List<Token> getExportaciones() { return exportaciones; }
+    public List<ErrorLexico> getErroresSintacticos() {
+        return erroresSintacticos;
+    }
 }

@@ -4,15 +4,18 @@ import java.util.List;
 public class Agente {
     private String nombre;
     private String contexto;
+    private int fila;
+    private int columna;
+
 
     private List<Variable> variables;
     private List<Comando> comandos;
 
-    public Agente(String nombre) {
+    public Agente(String nombre, int fila, int columna) {
         this.nombre = nombre;
         this.contexto = "";
-
-        // Inicializamos las listas vacías
+        this.fila = fila;
+        this.columna = columna;
         this.variables = new ArrayList<>();
         this.comandos = new ArrayList<>();
     }
@@ -55,5 +58,21 @@ public class Agente {
 
     public void agregarComando(Comando nuevoComando) {
         this.comandos.add(nuevoComando);
+    }
+
+    public int getFila() {
+        return fila;
+    }
+
+    public void setFila(int fila) {
+        this.fila = fila;
+    }
+
+    public int getColumna() {
+        return columna;
+    }
+
+    public void setColumna(int columna) {
+        this.columna = columna;
     }
 }

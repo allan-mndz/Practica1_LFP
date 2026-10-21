@@ -1,10 +1,14 @@
 public class Variable {
     private String nombre;
     private String valor;
+    private int fila;
+    private int columna;
 
-    public Variable(String nombre, String valor) {
+    public Variable(String nombre, String valor, int fila, int columna) {
         this.nombre = nombre;
         this.valor = valor;
+        this.fila = fila;
+        this.columna = columna;
     }
 
     public String getNombre() {
@@ -22,4 +26,8 @@ public class Variable {
     public void setValor(String valor) {
         this.valor = valor;
     }
+
+    public int getFila() { return fila; }
+
+    public int getColumna() { return columna; }
 }

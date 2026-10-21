@@ -49,6 +49,8 @@ public class VentanaPrincipal extends JFrame {
                 listaErroresActual.clear();
                 List<ErrorLexico> listaErroresSintacticos = new ArrayList<>();
 
+                List<ErrorLexico> listaErroresSemanticos = new ArrayList<>();
+
                 try {
 
                     //analisis lexico
@@ -71,8 +73,16 @@ public class VentanaPrincipal extends JFrame {
 
                     Parser analizadorSintactico = new Parser(listaTokensActual);
                     analizadorSintactico.parsePrograma();
-
                     listaErroresSintacticos = analizadorSintactico.getErroresSintacticos();
+
+                    AnalizadorSemantico analizadorSemantico = new AnalizadorSemantico(
+                            analizadorSintactico.getListaAgentes(),
+                            analizadorSintactico.getEjecuciones(),
+                            analizadorSintactico.getExportaciones()
+                    );
+
+                    analizadorSemantico.analizar();
+                    listaErroresSemanticos = analizadorSemantico.getErroresSemanticos();
 
                 }catch (Exception ex){
                     JOptionPane.showMessageDialog(null, "Error crítico: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
@@ -91,8 +101,9 @@ public class VentanaPrincipal extends JFrame {
                 txtConsolaTokens.setText(reporteTokens.toString());
 
                 StringBuilder reporteErrores = new StringBuilder();
-                if (listaErroresActual.isEmpty() && listaErroresSintacticos.isEmpty()) {
-                    reporteErrores.append("No se encontraron errores lexicos ni sintacticos.\n");
+
+                if (listaErroresActual.isEmpty() && listaErroresSintacticos.isEmpty() && listaErroresSemanticos.isEmpty()) {
+                    reporteErrores.append("No se encontraron errores lexicos, sintacticos ni semanticos.\n");
                     JOptionPane.showMessageDialog(null, "Analisis completado sin errores.", "Exito", JOptionPane.INFORMATION_MESSAGE);
                 } else {
                     reporteErrores.append("--- ERRORES ENCONTRADOS ---\n\n");
@@ -110,6 +121,14 @@ public class VentanaPrincipal extends JFrame {
                         reporteErrores.append("Errores SINTACTICOS: '").append(err.getLexema()).append("'")
                                 .append(" | Descripcion: ").append(err.getDescripcion())
                                 .append(" | Fila: ").append(err.getFila())
+                                .append(" | Columna: ").append(err.getColumna()).append("\n");
+                    }
+
+                    // Imprimimos los errores semánticos
+                    for (ErrorLexico err : listaErroresSemanticos) {
+                        reporteErrores.append("Errores SEMANTICOS: '").append(err.getLexema()).append("'")
+                                .append(" | Descripcion: ").append(err.getDescripcion())
+                                .append(" | Fila: ").append(err.getFila()) // Como le pusimos 0 temporalmente, saldrá 0
                                 .append(" | Columna: ").append(err.getColumna()).append("\n");
                     }
 

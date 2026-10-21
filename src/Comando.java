@@ -3,12 +3,17 @@ public class Comando {
     private String argumentoPrincipal; // Para comandos ia
     private String conectores;         // Conectores xd
     private String variableDestino;    // (lo que va después de ->)
+    private int fila;
+    private int columna;
 
-    public Comando(String tipoComando, String argumentoPrincipal, String conectores, String variableDestino) {
+
+    public Comando(String tipoComando, String argumentoPrincipal, String conectores, String variableDestino, int fila, int columna) {
         this.tipoComando = tipoComando;
         this.argumentoPrincipal = argumentoPrincipal;
         this.conectores = conectores;
         this.variableDestino = variableDestino;
+        this.fila = fila;
+        this.columna = columna;
     }
 
     public String getTipoComando() {
@@ -41,5 +46,21 @@ public class Comando {
 
     public void setVariableDestino(String variableDestino) {
         this.variableDestino = variableDestino;
+    }
+
+    public int getFila() {
+        return fila;
+    }
+
+    public void setFila(int fila) {
+        this.fila = fila;
+    }
+
+    public int getColumna() {
+        return columna;
+    }
+
+    public void setColumna(int columna) {
+        this.columna = columna;
     }
 }
