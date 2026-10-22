@@ -105,6 +105,10 @@ public class VentanaPrincipal extends JFrame {
                 if (listaErroresActual.isEmpty() && listaErroresSintacticos.isEmpty() && listaErroresSemanticos.isEmpty()) {
                     reporteErrores.append("No se encontraron errores lexicos, sintacticos ni semanticos.\n");
                     JOptionPane.showMessageDialog(null, "Analisis completado sin errores.", "Exito", JOptionPane.INFORMATION_MESSAGE);
+
+
+
+
                 } else {
                     reporteErrores.append("--- ERRORES ENCONTRADOS ---\n\n");
 
