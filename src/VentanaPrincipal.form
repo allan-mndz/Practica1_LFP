@@ -75,6 +75,26 @@
                   </component>
                 </children>
               </grid>
+              <grid id="7f471" binding="promptGenerado" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                <margin top="0" left="0" bottom="0" right="0"/>
+                <constraints>
+                  <tabbedpane title="Untitled"/>
+                </constraints>
+                <properties/>
+                <border type="none"/>
+                <children>
+                  <component id="a4b5d" class="javax.swing.JTextArea" binding="txtPromptGenerado">
+                    <constraints>
+                      <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false">
+                        <preferred-size width="150" height="50"/>
+                      </grid>
+                    </constraints>
+                    <properties>
+                      <editable value="false"/>
+                    </properties>
+                  </component>
+                </children>
+              </grid>
             </children>
           </tabbedpane>
         </children>
@@ -98,12 +118,12 @@
           <background color="-2525826"/>
           <font name="JetBrains Mono ExtraBold" size="20" style="0"/>
           <foreground color="-16777216"/>
-          <text value="Analizar"/>
+          <text value="COMPILAR"/>
         </properties>
       </component>
       <component id="c0c3d" class="javax.swing.JButton" binding="btnReportes">
         <constraints>
-          <grid row="1" column="0" row-span="1" col-span="3" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+          <grid row="2" column="0" row-span="1" col-span="3" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
           <background color="-3024617"/>
@@ -113,16 +133,15 @@
           <text value="Generar Reportes"/>
         </properties>
       </component>
-      <component id="d28b5" class="javax.swing.JButton" binding="btnGenerarAFD">
+      <component id="1cf14" class="javax.swing.JButton" binding="btnPrompt">
         <constraints>
-          <grid row="2" column="0" row-span="1" col-span="3" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+          <grid row="1" column="0" row-span="1" col-span="3" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
-          <background color="-2532582"/>
-          <enabled value="true"/>
+          <background color="-2522602"/>
           <font name="JetBrains Mono ExtraBold" size="20" style="0"/>
           <foreground color="-16777216"/>
-          <text value="Generar AFD"/>
+          <text value="GENERAR PROMPT"/>
         </properties>
       </component>
     </children>

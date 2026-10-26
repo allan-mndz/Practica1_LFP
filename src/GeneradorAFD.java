@@ -1,4 +1,4 @@
-import javax.swing.*;
+/* import javax.swing.*;
 import java.io.File;
 import java.io.FileWriter;
 
@@ -138,3 +138,4 @@ public class GeneradorAFD {
         }
     }
 }
+*/

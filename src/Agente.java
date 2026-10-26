@@ -7,7 +7,6 @@ public class Agente {
     private int fila;
     private int columna;
 
-
     private List<Variable> variables;
     private List<Comando> comandos;
 
@@ -52,14 +51,6 @@ public class Agente {
         this.comandos = comandos;
     }
 
-    public void agregarVariable(Variable nuevaVariable) {
-        this.variables.add(nuevaVariable);
-    }
-
-    public void agregarComando(Comando nuevoComando) {
-        this.comandos.add(nuevoComando);
-    }
-
     public int getFila() {
         return fila;
     }
@@ -74,5 +65,13 @@ public class Agente {
 
     public void setColumna(int columna) {
         this.columna = columna;
+    }
+
+    public void agregarVariable(Variable nuevaVariable) {
+        this.variables.add(nuevaVariable);
+    }
+
+    public void agregarComando(Comando nuevoComando) {
+        this.comandos.add(nuevoComando);
     }
 }

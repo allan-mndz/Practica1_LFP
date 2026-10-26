@@ -244,7 +244,7 @@ public class Parser {
         } else if (tokenActual.getTipo().equals("NUMERO")) {
             valor = tokenActual.getLexema(); // Atrapamos el número
             match("NUMERO");
-            valor = parseUnidad() + valor;
+            valor = valor + parseUnidad();
 
         } else if (tokenActual.getTipo().equals("CARGAR")) {
             valor = parseCargar(); // Recibimos toda la instrucción cargar
