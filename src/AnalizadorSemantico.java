@@ -21,19 +21,19 @@ public class AnalizadorSemantico {
         for (Agente agente : listaAgentes) {
 
             //registrar agente
-            if (existeSimbolo(agente.getNombre(), "Global")) {
+            if (existeSimbolo(agente.getNombre(), "Global")) { // si ya se utilizo agente una vez
                 erroresSemanticos.add(new ErrorLexico(agente.getNombre(), "Error Semántico: Ya existe un agente con este nombre", agente.getFila(), agente.getColumna()));
             } else {
                 tablaSimbolos.add(new Simbolo(agente.getNombre(), "Agente", "Global", agente.getFila()));
             }
 
-            //valida y registrar variables
+            //valida y registra variables
             for (Variable var : agente.getVariables()) {
                 validarIdentificadoresEnTexto(var.getValor(), agente.getNombre(), var.getFila(), var.getColumna(), "");
                 tablaSimbolos.add(new Simbolo(var.getNombre(), "Variable Declarada", agente.getNombre(), var.getFila()));
             }
 
-            //validar y registrar comandos
+            //validar y regista comandos
             for (Comando cmd : agente.getComandos()) {
                 validarIdentificadoresEnTexto(cmd.getArgumentoPrincipal(), agente.getNombre(), cmd.getFila(), cmd.getColumna(), cmd.getTipoComando());
                 validarIdentificadoresEnTexto(cmd.getConectores(), agente.getNombre(), cmd.getFila(), cmd.getColumna(), "");

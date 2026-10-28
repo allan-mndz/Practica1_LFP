@@ -1,7 +1,7 @@
 public class Token {
     private int idToken;
-    private String lexema;
-    private String tipo;
+    private String lexema; // texto puro
+    private String tipo; // categoria gramatical
     private int fila;
     private int columna;
 
